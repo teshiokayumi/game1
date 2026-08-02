@@ -58,6 +58,7 @@ const state = {
   dirIndex: 2, // 初期は下向き
   walls: new Set(),
   fragments: new Map(), // "r,c" -> { color, name, el }
+  covers: new Map(),    // "r,c" -> 蓋の要素(開けるまで欠片は見えない)
   collected: new Set(),
   finished: false,
 };
@@ -74,6 +75,7 @@ function buildMap() {
   mapEl.querySelectorAll(".cell").forEach((el) => el.remove());
   state.walls.clear();
   state.fragments.clear();
+  state.covers.clear();
   state.collected.clear();
   state.finished = false;
 
@@ -91,7 +93,7 @@ function buildMap() {
       if (ch === "S") {
         state.row = r;
         state.col = c;
-        continue;
+        continue; // スタート地点だけは最初から蓋なし
       }
       if (FRAGMENT_DEFS[ch]) {
         const def = FRAGMENT_DEFS[ch];
@@ -103,12 +105,27 @@ function buildMap() {
         cell.appendChild(frag);
         state.fragments.set(key(r, c), { color: def.color, name: def.name, el: frag });
       }
+
+      // 床のマスは蓋で隠す(欠片の位置は開けるまで分からない)
+      const cover = document.createElement("div");
+      cover.className = "cover";
+      cell.appendChild(cover);
+      state.covers.set(key(r, c), cover);
     }
   }
 
   document.querySelectorAll(".slot").forEach((s) => s.classList.remove("filled"));
   updatePlayer(false);
-  setMessage("欠片をぜんぶ集めよう!");
+  setMessage("欠片は蓋の下にかくれている…!");
+}
+
+// 蓋を開ける(開いたマスはそのまま開いたままにする)
+function openCover(k) {
+  const cover = state.covers.get(k);
+  if (!cover) return;
+  state.covers.delete(k);
+  cover.classList.add("open");
+  setTimeout(() => cover.remove(), 400);
 }
 
 // ==============================
@@ -184,6 +201,7 @@ function move() {
   state.row = nr;
   state.col = nc;
   updatePlayer(true);
+  openCover(key(nr, nc));
 
   const frag = state.fragments.get(key(nr, nc));
   if (frag) {
