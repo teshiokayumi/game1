@@ -46,6 +46,7 @@ const gameScreen   = document.getElementById("game-screen");
 const endingScreen = document.getElementById("ending-screen");
 const mapEl        = document.getElementById("map");
 const playerEl     = document.getElementById("player");
+const sheetEl      = document.getElementById("sheet");
 const messageEl    = document.getElementById("message");
 const songEl       = document.getElementById("concert-song");
 
@@ -58,9 +59,9 @@ const state = {
   dirIndex: 2, // 初期は下向き
   walls: new Set(),
   fragments: new Map(), // "r,c" -> { color, name, el }
-  covers: new Map(),    // "r,c" -> 蓋の要素(開けるまで欠片は見えない)
   collected: new Set(),
   finished: false,
+  previewing: false, // シートが掛かるまでのマップ確認タイム中は操作不可
 };
 
 function key(r, c) {
@@ -75,7 +76,6 @@ function buildMap() {
   mapEl.querySelectorAll(".cell").forEach((el) => el.remove());
   state.walls.clear();
   state.fragments.clear();
-  state.covers.clear();
   state.collected.clear();
   state.finished = false;
 
@@ -93,7 +93,7 @@ function buildMap() {
       if (ch === "S") {
         state.row = r;
         state.col = c;
-        continue; // スタート地点だけは最初から蓋なし
+        continue;
       }
       if (FRAGMENT_DEFS[ch]) {
         const def = FRAGMENT_DEFS[ch];
@@ -105,27 +105,11 @@ function buildMap() {
         cell.appendChild(frag);
         state.fragments.set(key(r, c), { color: def.color, name: def.name, el: frag });
       }
-
-      // 床のマスは蓋で隠す(欠片の位置は開けるまで分からない)
-      const cover = document.createElement("div");
-      cover.className = "cover";
-      cell.appendChild(cover);
-      state.covers.set(key(r, c), cover);
     }
   }
 
   document.querySelectorAll(".slot").forEach((s) => s.classList.remove("filled"));
   updatePlayer(false);
-  setMessage("欠片は蓋の下にかくれている…!");
-}
-
-// 蓋を開ける(開いたマスはそのまま開いたままにする)
-function openCover(k) {
-  const cover = state.covers.get(k);
-  if (!cover) return;
-  state.covers.delete(k);
-  cover.classList.add("open");
-  setTimeout(() => cover.remove(), 400);
 }
 
 // ==============================
@@ -178,14 +162,14 @@ function playChime(step) {
 // 操作
 // ==============================
 function turn() {
-  if (state.finished) return;
+  if (state.finished || state.previewing) return;
   state.dirIndex = (state.dirIndex + 1) % DIRS.length;
   updatePlayer(true);
   setMessage("いまの向き: " + DIRS[state.dirIndex].label);
 }
 
 function move() {
-  if (state.finished) return;
+  if (state.finished || state.previewing) return;
   const dir = DIRS[state.dirIndex];
   const nr = state.row + dir.dr;
   const nc = state.col + dir.dc;
@@ -201,7 +185,7 @@ function move() {
   state.row = nr;
   state.col = nc;
   updatePlayer(true);
-  openCover(key(nr, nc));
+  setMessage(DIRS[state.dirIndex].label + "に 1歩すすんだ");
 
   const frag = state.fragments.get(key(nr, nc));
   if (frag) {
@@ -239,11 +223,33 @@ function showScreen(screen) {
   );
 }
 
+let previewTimer = null;
+
 function startGame() {
   buildMap();
   state.dirIndex = 2;
   updatePlayer(false);
   showScreen(gameScreen);
+
+  // マップ確認タイム: 数秒だけ迷路とスタート位置を見せてからシートで覆う
+  state.previewing = true;
+  sheetEl.classList.remove("down");
+  clearInterval(previewTimer);
+  let count = 3;
+  setMessage("マップをおぼえよう! " + count);
+  const timer = previewTimer = setInterval(() => {
+    count--;
+    if (count > 0) {
+      setMessage("マップをおぼえよう! " + count);
+      return;
+    }
+    clearInterval(timer);
+    sheetEl.classList.add("down"); // シートを上からかぶせる
+    setTimeout(() => {
+      state.previewing = false;
+      setMessage("絵のどのあたりにいるか、思いうかべながらすすもう!");
+    }, 850);
+  }, 1000);
 }
 
 function showEnding() {
@@ -264,6 +270,7 @@ function showEnding() {
 }
 
 function backToTitle() {
+  clearInterval(previewTimer);
   songEl.pause();
   songEl.currentTime = 0;
   showScreen(titleScreen);

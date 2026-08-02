@@ -251,26 +251,29 @@ body {
   100% { transform: scale(2.2); opacity: 0; }
 }
 
-/* 探索ルートを隠す蓋(欠片は蓋の下に隠れる) */
+/* 探索画面全体を覆う一枚絵のシート
+   プレイヤーも欠片もこの下に隠れるため、
+   絵のどのあたりにいるかを頼りに位置を推測する */
 
-.cover {
+.sheet {
   position: absolute;
   inset: 0;
-  z-index: 4;
-  background-image: url("../assets/tile_cover.png");
-  background-size: cover;
-  background-position: center;
-  box-shadow: inset 0 0 0 1px rgba(20, 27, 63, .8), inset 0 2px 3px rgba(255, 255, 255, .25), inset 0 -2px 3px rgba(0, 0, 0, .35);
-  backface-visibility: hidden;
+  z-index: 10;
+  background-image: url("../assets/cover_sheet.png");
+  background-size: 100% 100%;
+  transform: translateY(-103%);
+  transition: transform .8s cubic-bezier(.25, .8, .35, 1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .55);
+  pointer-events: none;
 }
 
-.cover.open {
-  animation: coverOpen .35s ease forwards;
+.sheet.down {
+  transform: translateY(0);
 }
 
-@keyframes coverOpen {
-  0%   { transform: perspective(300px) rotateX(0deg);  opacity: 1; }
-  100% { transform: perspective(300px) rotateX(85deg); opacity: 0; }
+/* 欠片は常に見えない(拾ったときだけ収集UI・効果音で分かる) */
+.fragment {
+  visibility: hidden;
 }
 
 /* プレイヤー */
