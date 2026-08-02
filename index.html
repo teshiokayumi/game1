@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>音の欠片さがし ―コンサートへの道―</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- タイトル画面 -->
+<section id="title-screen" class="screen">
+  <div class="title-inner">
+    <h1 class="game-title"><span class="title-note">♪</span> 音の欠片さがし</h1>
+    <p class="game-subtitle">―コンサートへの道―</p>
+    <img src="assets/character_player.png" alt="主人公" class="title-chara">
+    <p class="title-desc">
+      散らばった <span class="c-red">赤</span>・<span class="c-blue">青</span>・<span class="c-yellow">黄</span>・<span class="c-green">緑</span>・<span class="c-white">白</span> の音の欠片を集めて<br>
+      コンサートをひらこう!
+    </p>
+    <button id="start-btn" class="big-btn">スタート</button>
+  </div>
+</section>
+
+<!-- 探索画面 -->
+<section id="game-screen" class="screen hidden">
+  <header class="hud">
+    <div class="hud-label">あつめた欠片</div>
+    <div id="slots" class="slots">
+      <div class="slot" data-color="red"><div class="gem gem-red"></div></div>
+      <div class="slot" data-color="blue"><div class="gem gem-blue"></div></div>
+      <div class="slot" data-color="yellow"><div class="gem gem-yellow"></div></div>
+      <div class="slot" data-color="green"><div class="gem gem-green"></div></div>
+      <div class="slot" data-color="white"><div class="gem gem-white"></div></div>
+    </div>
+  </header>
+
+  <div class="map-wrap">
+    <div id="map" class="map">
+      <!-- マス目・欠片は JS で生成 -->
+      <div id="player" class="player">
+        <img id="player-img" src="assets/character_player.png" alt="プレイヤー">
+        <div id="dir-arrow" class="dir-arrow"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="message" class="message">欠片をぜんぶ集めよう!</div>
+
+  <footer class="controls">
+    <button id="turn-btn" class="ctrl-btn">
+      <span class="ctrl-icon">⟳</span>
+      <span class="ctrl-label">方向変更</span>
+    </button>
+    <button id="move-btn" class="ctrl-btn ctrl-move">
+      <span class="ctrl-icon">➤</span>
+      <span class="ctrl-label">すすむ</span>
+    </button>
+  </footer>
+</section>
+
+<!-- エンディング(コンサート)画面 -->
+<section id="ending-screen" class="screen hidden">
+  <div class="ending-inner">
+    <div class="ending-lights"></div>
+    <h2 class="ending-title">🎉 コンサートが開かれた! 🎉</h2>
+    <img src="assets/ending_illustration.png" alt="コンサート" class="ending-illust">
+    <p class="ending-text">5つの音の欠片がひとつになり、<br>すてきな歌声がひびきわたった――</p>
+    <button id="restart-btn" class="big-btn">タイトルへもどる</button>
+  </div>
+</section>
+
+<audio id="concert-song" src="assets/concert_song.mp3" preload="auto" loop></audio>
+
+<script src="js/game.js"></script>
+</body>
+</html>

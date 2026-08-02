@@ -1,0 +1,421 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: "Hiragino Maru Gothic ProN", "BIZ UDGothic", "Yu Gothic", sans-serif;
+  background: linear-gradient(180deg, #0b1030 0%, #1a2350 60%, #2a3570 100%);
+  color: #f0f4ff;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---------- タイトル画面 ---------- */
+
+.title-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 16px;
+}
+
+.game-title {
+  font-size: clamp(26px, 7vw, 40px);
+  letter-spacing: 2px;
+  text-shadow: 0 0 12px #5fd7ff, 0 2px 4px rgba(0, 0, 0, .6);
+}
+
+.title-note {
+  color: #7fe3ff;
+}
+
+.game-subtitle {
+  font-size: clamp(14px, 4vw, 18px);
+  color: #aac4ff;
+}
+
+.title-chara {
+  width: clamp(120px, 34vw, 200px);
+  height: auto;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .5));
+  animation: float 2.4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+.title-desc {
+  font-size: clamp(13px, 3.6vw, 16px);
+  line-height: 1.8;
+}
+
+.c-red    { color: #ff6b6b; font-weight: bold; }
+.c-blue   { color: #6bb8ff; font-weight: bold; }
+.c-yellow { color: #ffd93d; font-weight: bold; }
+.c-green  { color: #6bff9e; font-weight: bold; }
+.c-white  { color: #ffffff; font-weight: bold; text-shadow: 0 0 6px #9fb8ff; }
+
+.big-btn {
+  font-family: inherit;
+  font-size: clamp(18px, 5vw, 24px);
+  font-weight: bold;
+  color: #10163a;
+  background: linear-gradient(180deg, #8fe7ff, #48b6ff);
+  border: none;
+  border-radius: 999px;
+  padding: 14px 52px;
+  box-shadow: 0 4px 0 #2b7cc9, 0 8px 18px rgba(0, 0, 0, .4);
+  cursor: pointer;
+}
+
+.big-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #2b7cc9, 0 4px 10px rgba(0, 0, 0, .4);
+}
+
+/* ---------- 探索画面 ---------- */
+
+#game-screen {
+  justify-content: space-between;
+  gap: 6px;
+  padding-top: max(10px, env(safe-area-inset-top));
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+}
+
+.hud {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.hud-label {
+  font-size: 12px;
+  color: #aac4ff;
+  letter-spacing: 1px;
+}
+
+.slots {
+  display: flex;
+  gap: 10px;
+  background: rgba(0, 0, 0, .35);
+  border: 1px solid rgba(140, 170, 255, .4);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+.slot {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .08);
+}
+
+.slot .gem {
+  opacity: .18;
+  filter: grayscale(.9);
+  transform: scale(.85);
+  transition: all .35s ease;
+}
+
+.slot.filled .gem {
+  opacity: 1;
+  filter: none;
+  transform: scale(1);
+}
+
+.slot.filled {
+  background: rgba(255, 255, 255, .18);
+  box-shadow: 0 0 10px rgba(160, 220, 255, .6);
+}
+
+/* 欠片(ダイヤ型の宝石) */
+.gem {
+  width: 16px;
+  height: 16px;
+  transform: rotate(45deg);
+  border-radius: 3px;
+}
+
+.gem-red    { background: linear-gradient(135deg, #ffb3b3, #ff4d4d); box-shadow: 0 0 8px #ff6b6b; }
+.gem-blue   { background: linear-gradient(135deg, #b3dcff, #3f92ff); box-shadow: 0 0 8px #6bb8ff; }
+.gem-yellow { background: linear-gradient(135deg, #fff2b3, #ffc93d); box-shadow: 0 0 8px #ffd93d; }
+.gem-green  { background: linear-gradient(135deg, #b8ffd1, #33d474); box-shadow: 0 0 8px #6bff9e; }
+.gem-white  { background: linear-gradient(135deg, #ffffff, #cfd8ff); box-shadow: 0 0 8px #ffffff; border: 1px solid #9fb0e0; }
+
+/* マップ */
+
+.map-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 0 8px;
+}
+
+.map {
+  position: relative;
+  aspect-ratio: 9 / 11;
+  max-width: 100%;
+  max-height: 100%;
+  width: min(94vw, calc((100dvh - 220px) * 9 / 11));
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(11, 1fr);
+  background: #141b3f;
+  border: 2px solid #4a5aa8;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+}
+
+.cell {
+  position: relative;
+}
+
+.cell.floor {
+  background: #222c5e;
+  box-shadow: inset 0 0 0 1px rgba(90, 110, 190, .25);
+}
+
+.cell.wall {
+  background: linear-gradient(180deg, #3d4a8f, #2a3470);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .35), inset 0 2px 0 rgba(255, 255, 255, .12);
+}
+
+/* マップ上の欠片 */
+.fragment {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: twinkle 1.6s ease-in-out infinite;
+}
+
+.fragment .gem {
+  width: 55%;
+  height: 55%;
+}
+
+.fragment .note {
+  position: absolute;
+  font-size: 10px;
+  color: rgba(255, 255, 255, .95);
+  text-shadow: 0 0 4px rgba(0, 0, 0, .6);
+  pointer-events: none;
+}
+
+@keyframes twinkle {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.15); }
+}
+
+.fragment.picked {
+  animation: pickup .4s ease forwards;
+}
+
+@keyframes pickup {
+  0%   { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* プレイヤー */
+
+.player {
+  position: absolute;
+  width: calc(100% / 9);
+  height: calc(100% / 11);
+  transition: left .18s ease, top .18s ease;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.player img {
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  width: 120%;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .5));
+  transition: transform .15s ease;
+}
+
+.player.face-left img {
+  transform: translateX(-50%) scaleX(-1);
+}
+
+.player.bump {
+  animation: bump .25s ease;
+}
+
+@keyframes bump {
+  0%, 100% { margin-left: 0; }
+  30%      { margin-left: -3px; }
+  60%      { margin-left: 3px; }
+}
+
+.dir-arrow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 11px solid #7fe3ff;
+  filter: drop-shadow(0 0 4px #48b6ff);
+  z-index: 6;
+}
+
+/* 向きごとの矢印位置(セルの外周に表示) */
+.dir-up    .dir-arrow { transform: translate(-50%, -50%) translateY(-160%) rotate(0deg); }
+.dir-right .dir-arrow { transform: translate(-50%, -50%) translateX(160%)  rotate(90deg); }
+.dir-down  .dir-arrow { transform: translate(-50%, -50%) translateY(160%)  rotate(180deg); }
+.dir-left  .dir-arrow { transform: translate(-50%, -50%) translateX(-160%) rotate(270deg); }
+
+.message {
+  min-height: 22px;
+  font-size: clamp(13px, 3.8vw, 16px);
+  color: #cfe0ff;
+  text-align: center;
+}
+
+/* 操作ボタン */
+
+.controls {
+  display: flex;
+  gap: 18px;
+  padding: 4px 16px 8px;
+}
+
+.ctrl-btn {
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: clamp(120px, 38vw, 170px);
+  height: clamp(64px, 16vw, 84px);
+  border: none;
+  border-radius: 18px;
+  color: #eaf4ff;
+  background: linear-gradient(180deg, #46549e, #33407e);
+  box-shadow: 0 5px 0 #1f2a5c, 0 8px 16px rgba(0, 0, 0, .45);
+  cursor: pointer;
+}
+
+.ctrl-move {
+  background: linear-gradient(180deg, #3f9ad6, #2f6fb8);
+  box-shadow: 0 5px 0 #1d4a80, 0 8px 16px rgba(0, 0, 0, .45);
+}
+
+.ctrl-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #1f2a5c, 0 4px 8px rgba(0, 0, 0, .45);
+}
+
+.ctrl-icon {
+  font-size: clamp(22px, 6vw, 30px);
+  line-height: 1;
+}
+
+.ctrl-label {
+  font-size: clamp(13px, 3.6vw, 16px);
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+/* ---------- エンディング画面 ---------- */
+
+#ending-screen {
+  background: radial-gradient(circle at 50% 20%, #2a3d8f 0%, #0b1030 70%);
+  animation: fadein 1.2s ease;
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.ending-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  padding: 16px;
+  max-width: 640px;
+  width: 100%;
+}
+
+.ending-lights {
+  position: absolute;
+  inset: -40px 0 auto 0;
+  height: 120px;
+  background:
+    radial-gradient(ellipse 60px 120px at 20% 0%, rgba(127, 227, 255, .35), transparent 70%),
+    radial-gradient(ellipse 60px 120px at 50% 0%, rgba(255, 255, 255, .3), transparent 70%),
+    radial-gradient(ellipse 60px 120px at 80% 0%, rgba(180, 150, 255, .35), transparent 70%);
+  pointer-events: none;
+  animation: lights 3s ease-in-out infinite alternate;
+}
+
+@keyframes lights {
+  from { opacity: .5; }
+  to   { opacity: 1; }
+}
+
+.ending-title {
+  font-size: clamp(20px, 5.5vw, 30px);
+  text-shadow: 0 0 14px #5fd7ff;
+}
+
+.ending-illust {
+  width: 100%;
+  max-width: 560px;
+  max-height: 52dvh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(100, 170, 255, .55);
+}
+
+.ending-text {
+  font-size: clamp(13px, 3.8vw, 17px);
+  line-height: 1.9;
+  color: #dbe7ff;
+}
